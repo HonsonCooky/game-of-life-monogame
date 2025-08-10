@@ -21,7 +21,6 @@ public class GameOfLife : Game
 	private SpriteFont font;
 	private Texture2D pixel;
 	private TimeSpan lastUpdateTime;
-	private Vector2 cameraOffset;
 
 	public GameOfLife()
 	{
@@ -150,8 +149,8 @@ public class GameOfLife : Game
 
 	private void DrawRectangle(int x, int y)
 	{
-		var rectX = (int)(x - cameraOffset.X) * RECT_SIZE;
-		var rectY = (int)(y - cameraOffset.Y) * RECT_SIZE;
+		var rectX = x * RECT_SIZE;
+		var rectY = y * RECT_SIZE;
 		var viewPort = GraphicsDevice.Viewport;
 		if (rectX > viewPort.Width || rectY > viewPort.Height) return;
 
