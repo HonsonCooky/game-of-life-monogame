@@ -13,7 +13,7 @@ public class GameOfLife : Game
 
 	private bool isPlaying;
 	private HashSet<Vector2> aliveCells;
-	private int updateTimeMs = 500;
+	private int updateTimeMs = 250;
 	private KeyboardState prevKeebState;
 	private MouseState prevMouseState;
 	private readonly GraphicsDeviceManager graphics;
@@ -51,6 +51,8 @@ public class GameOfLife : Game
 	{
 		base.Update(gameTime);
 
+		if (!IsActive) return;
+
 		var mouseState = Mouse.GetState();
 		if (!prevMouseState.Equals(mouseState))
 		{
@@ -71,8 +73,10 @@ public class GameOfLife : Game
 		if (!prevKeebState.Equals(keebState))
 		{
 			if (keebState.IsKeyDown(Keys.Space)) isPlaying = !isPlaying;
-			if (keebState.IsKeyDown(Keys.Left)) updateTimeMs = Math.Max(updateTimeMs - 50, 0);
-			if (keebState.IsKeyDown(Keys.Right)) updateTimeMs = Math.Min(updateTimeMs + 50, 1000);
+			if (keebState.IsKeyDown(Keys.F)) updateTimeMs = Math.Max(updateTimeMs - 50, 0);
+			if (keebState.IsKeyDown(Keys.S)) updateTimeMs = Math.Min(updateTimeMs + 50, 1000);
+			if (keebState.IsKeyDown(Keys.Delete)) aliveCells.Clear();
+			if (keebState.IsKeyDown(Keys.Escape)) Exit();
 		}
 
 		if (isPlaying)
@@ -118,14 +122,20 @@ public class GameOfLife : Game
 			else if (count == 3) nextState.Add(cell);
 		}
 
-		aliveCells = [.. nextState.Where(
-			cell =>
-				(cell.X * RECT_SIZE) < GraphicsDevice.Viewport.Width &&
-				cell.X > 0 &&
-				(cell.Y * RECT_SIZE) < GraphicsDevice.Viewport.Height &&
-				cell.Y > 0
-			)
-		];
+		aliveCells = [.. nextState.Where(IsOnScreen)];
+	}
+
+	private bool IsOnScreen(Vector2 cell)
+	{
+		var left = cell.X * RECT_SIZE;
+		var right = left + RECT_SIZE;
+
+		var top = cell.Y * RECT_SIZE;
+		var bottom = top + RECT_SIZE;
+
+		var viewport = GraphicsDevice.Viewport;
+
+		return left > 0 && right < viewport.Width && top > 0 && bottom < viewport.Height;
 	}
 
 	protected override void Draw(GameTime gameTime)
@@ -151,9 +161,6 @@ public class GameOfLife : Game
 	{
 		var rectX = x * RECT_SIZE;
 		var rectY = y * RECT_SIZE;
-		var viewPort = GraphicsDevice.Viewport;
-		if (rectX > viewPort.Width || rectY > viewPort.Height) return;
-
 		spriteBatch.Draw(pixel, new Rectangle(rectX, rectY, RECT_SIZE, RECT_SIZE), Color.White);
 	}
 }

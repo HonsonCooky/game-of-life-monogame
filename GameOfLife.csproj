@@ -3,7 +3,6 @@
 		<OutputType>WinExe</OutputType>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<PublishSingleFile>true</PublishSingleFile>
-		<RollForward>Major</RollForward>
 		<SelfContained>true</SelfContained>
 		<TargetFramework>net9.0</TargetFramework>
 		<TieredCompilation>false</TieredCompilation>
